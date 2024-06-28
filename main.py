@@ -3,7 +3,12 @@ from fastapi import FastAPI
 from core.configs import settings
 from api.v1.api import api_router
 
-app = FastAPI(title="Curso API - Segurança")
+app = FastAPI(
+    title="PostSecure Api - FastAPI",
+    version="0.0.1",
+    description="API desenvolvida no curso de FastAPI com integração ao PostgreSQL, validações no banco de dados e tokens de acesso.",
+    openapi_url="/api/v1/openapi.json"
+    )
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 if __name__ == '__main__':

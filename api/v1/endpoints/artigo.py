@@ -22,7 +22,13 @@ from core.deps import get_session, get_current_user
 router = APIRouter()
 
 # POST Artigo
-@router.post("/", response_model=ArtigoSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", 
+    response_model=ArtigoSchema, 
+    status_code=status.HTTP_201_CREATED,
+    description="Permite a adição de um novo artigo especificando o título, a descrição e a URL da fonte no corpo da requisição. A autenticação do usuário é necessária, e o token de acesso deve ser enviado no cabeçalho de autorização utilizando o esquema Bearer.", 
+    summary="Adicionar um Artigo."
+    )
 async def post_artigo(artigo: ArtigoSchema, usuario_logado: UsuarioModel = Depends(get_current_user), db: AsyncSession = Depends(get_session)):
     # Cria uma nova instância de ArtigoModel com os dados fornecidos
     novo_artigo: ArtigoModel = ArtigoModel(
@@ -40,7 +46,13 @@ async def post_artigo(artigo: ArtigoSchema, usuario_logado: UsuarioModel = Depen
     return novo_artigo
 
 # GET Artigos - Consultas são sempre seguras
-@router.get("/", response_model=List[ArtigoSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/", 
+    response_model=List[ArtigoSchema], 
+    status_code=status.HTTP_200_OK,
+    description="Retorna todos os artigos criados.", 
+    summary="Retornar todos os Artigos criado.",
+    )
 async def get_artigos(db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -53,7 +65,13 @@ async def get_artigos(db: AsyncSession = Depends(get_session)):
         return artigos
 
 # GET Artigo - Consultas são sempre seguras
-@router.get("/{artigo_id}", response_model=ArtigoSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{artigo_id}", 
+    response_model=ArtigoSchema, 
+    status_code=status.HTTP_200_OK,
+    description="Retorna um único artigo de acordo com o ID fornecido no corpo da requisição.", 
+    summary="Retornar Artigo.",
+    )
 async def get_artigo(artigo_id: int, db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -69,7 +87,13 @@ async def get_artigo(artigo_id: int, db: AsyncSession = Depends(get_session)):
             raise HTTPException(detail='Artigo não encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
 # PUT Artigo
-@router.put("/{artigo_id}", response_model=ArtigoSchema, status_code=status.HTTP_202_ACCEPTED)
+@router.put(
+    "/{artigo_id}", 
+    response_model=ArtigoSchema, 
+    status_code=status.HTTP_202_ACCEPTED,
+    description="Permite a atualização parcial ou completa dos campos de um artigo existente, incluindo título, descrição e URL da fonte, conforme especificado no corpo da requisição. O token de acesso do usuário que está realizando a atualização deve ser fornecido no cabeçalho de autorização utilizando o esquema Bearer.",
+    summary="Atualizar Artigo."
+    )
 async def put_artigo(artigo_id: int, artigo: ArtigoSchema, db: AsyncSession = Depends(get_session), usuario_logado: UsuarioModel = Depends(get_current_user)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -99,7 +123,12 @@ async def put_artigo(artigo_id: int, artigo: ArtigoSchema, db: AsyncSession = De
             raise HTTPException(detail='Artigo não encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
 # DELETE Artigo
-@router.delete("/{artigo_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{artigo_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    description="Permite a exclusão de um artigo especificado pelo ID no parâmetro da URL. Somente o usuário que criou o artigo tem permissão para excluí-lo. A autenticação do usuário é necessária, e o token de acesso deve ser enviado no cabeçalho de autorização utilizando o esquema Bearer.",
+    summary="Deletar Artigo."
+    )
 async def delete_artigo(artigo_id: int, db: AsyncSession = Depends(get_session), usuario_logado: UsuarioModel = Depends(get_current_user)):
     # Abre uma sessão assíncrona
     async with db as session:
