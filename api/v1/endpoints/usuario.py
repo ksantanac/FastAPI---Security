@@ -28,13 +28,25 @@ from core.auth import autenticar, criar_token_acesso
 router = APIRouter()
 
 # GET logado
-@router.get("/logado", response_model=UsuarioSchemaBase)
+@router.get(
+    "/logado",
+    response_model=UsuarioSchemaBase,
+    description="Retorna o usuário logado ou não autorizado.",
+    summary="Retornar o usuário logado.",
+    )
 def get_logado(usuario_logado: UsuarioModel = Depends(get_current_user)):
     # Retorna o usuário atualmente logado
     return usuario_logado
 
+
 # POST / SignUP 
-@router.post("/signup", response_model=UsuarioSchemaBase, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/signup", 
+    response_model=UsuarioSchemaBase, 
+    status_code=status.HTTP_201_CREATED,
+    description="Adicionar um usuário.",
+    summary="Retornar o usuário adicionado.",
+    )
 async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(get_session)):
     # Cria uma nova instância de UsuarioModel com os dados fornecidos
     novo_usuario: UsuarioModel = UsuarioModel(
@@ -60,7 +72,13 @@ async def post_usuario(usuario: UsuarioSchemaCreate, db: AsyncSession = Depends(
                 )
 
 # GET Usuarios
-@router.get("/", response_model=List[UsuarioSchemaBase], status_code=status.HTTP_200_OK)
+@router.get(
+    "/", 
+    response_model=List[UsuarioSchemaBase], 
+    status_code=status.HTTP_200_OK,
+    description="Retorna todos os usuários cadastrados.",
+    summary="Retornar todos os usuários cadastrados.",
+    )
 async def get_usuarios(db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -73,7 +91,13 @@ async def get_usuarios(db: AsyncSession = Depends(get_session)):
         return usuarios
 
 # GET Usuario
-@router.get("/{usuario_id}", response_model=UsuarioSchemaArtigos, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{usuario_id}", 
+    response_model=UsuarioSchemaArtigos, 
+    status_code=status.HTTP_200_OK,
+    description="Retorna apenas um usuário por ID.", 
+    summary="Retornar usuário por ID",
+    )
 async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -89,7 +113,13 @@ async def get_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
             raise HTTPException(detail='Usuario não encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
 # PUT Usuario
-@router.put("/{usuario_id}", response_model=UsuarioSchemaBase, status_code=status.HTTP_202_ACCEPTED)
+@router.put(
+    "/{usuario_id}", 
+    response_model=UsuarioSchemaBase, 
+    status_code=status.HTTP_202_ACCEPTED,
+    description="Atualiza o usuário conforme o ID passado por parâmetro.", 
+    summary="Atualizar usuário.",
+    )
 async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -121,7 +151,12 @@ async def put_usuario(usuario_id: int, usuario: UsuarioSchemaUp, db: AsyncSessio
             raise HTTPException(detail='Usuário não encontrado.', status_code=status.HTTP_404_NOT_FOUND)
 
 # DELETE Usuario
-@router.delete("/{usuario_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{usuario_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    description="Deleta o usuário conforme o ID passado por parâmetro.", 
+    summary="Deletar usuário."
+    )
 async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session)):
     # Abre uma sessão assíncrona
     async with db as session:
@@ -142,7 +177,11 @@ async def delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_session
             raise HTTPException(detail='Usuário não encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
 # POST Login
-@router.post("/login")
+@router.post(
+    "/login",
+    description="Cria um token de acesso usando o e-mail e a senha fornecidos pelo usuário no corpo da requisição, onde 'username' representa o e-mail e 'password' representa a senha.", 
+    summary="Criar Token de acesso."
+    )
 async def login_usuario(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_session)):
     # Autentica o usuário com base nos dados do formulário
     usuario = await autenticar(
